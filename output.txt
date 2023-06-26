@@ -1,0 +1,8 @@
+1 Blok Start
+2 Blok 20
+3 Blok Forward
+4 Blok 60
+5 Blok Left
+6 Blok Reverse
+7 Blok 10
+8 Blok Stop
