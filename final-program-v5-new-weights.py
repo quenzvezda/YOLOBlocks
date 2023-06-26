@@ -95,15 +95,56 @@ def capture_frame():
             # Sort by top to bottom and then left to right
             indexes = sorted(indexes.flatten(), key=sort_key)
             ordered_class_ids = [class_ids[i] for i in indexes]
-            
-        for i in range(len(ordered_class_ids)):
-            print(i+1, classes[ordered_class_ids[i]])
-            with open('output.txt', 'w') as f:  # Open the file. 'w' means that the file will be overwritten if it exists.
-                for i in range(len(ordered_class_ids)):
-                    # Write to the file instead of printing. The write() function doesn't add a newline at the end, so we add it manually.
-                    f.write(f"{i+1} {classes[ordered_class_ids[i]]}\n")
+        
+        block_mapping = {
+        "Blok Forward": "F",
+        "Blok Left": "L",
+        "Blok Open": "O",
+        "Blok Reverse": "B",
+        "Blok Right": "R",
+        "Blok Close": "C",
+        "Blok 10": "10",
+        "Blok 20": "20",
+        "Blok 30": "30",
+        "Blok 40": "40",
+        "Blok 45": "45",
+        "Blok 50": "50",
+        "Blok 60": "60",
+        "Blok 90": "90",
+        }
+        
+        def is_number(block_name):
+            return block_name in ["10", "20", "30", "40", "45", "50", "60", "90"]
 
-        print("Ukuran Grid=", frame_height // grid_division)
+        def is_direction(block_name):
+            return block_name in ["F", "L", "O", "B", "R", "C"]
+
+        ordered_blocks = [block_mapping[classes[i]] for i in ordered_class_ids]
+        output_blocks = []
+        for i in range(len(ordered_blocks)):
+            output_blocks.append(ordered_blocks[i])
+            if i < len(ordered_blocks) - 1 and is_direction(ordered_blocks[i]) and is_number(ordered_blocks[i+1]):
+                output_blocks[i] += ordered_blocks[i+1]
+                ordered_blocks[i+1] = ""
+            elif is_direction(ordered_blocks[i]):
+                output_blocks[i] += "0"
+
+        output_blocks = [block for block in output_blocks if block != ""]
+
+        print(output_blocks)
+        
+        with open('output.txt', 'w') as f:  
+            for block in output_blocks:
+                f.write(f"{block}\n")
+        
+        # for i in range(len(ordered_class_ids)):
+        #     print(i+1, classes[ordered_class_ids[i]])
+        #     with open('output.txt', 'w') as f:  # Open the file. 'w' means that the file will be overwritten if it exists.
+        #         for i in range(len(ordered_class_ids)):
+        #             # Write to the file instead of printing. The write() function doesn't add a newline at the end, so we add it manually.
+        #             f.write(f"{i+1} {classes[ordered_class_ids[i]]}\n")
+
+        # print("Ukuran Grid=", frame_height // grid_division)
         
         cv2.imshow("Image", img)
         cv2.waitKey(0)
